@@ -18,14 +18,14 @@ type SegmentRepo interface {
 }
 
 type Segment struct {
-	ID        uint   `gorm:"primarykey"`
-	Tag       string `gorm:"uniqueIndex"`
-	Step      uint32
-	MaxSeq    uint64
-	Describe  string
-	CreatedAt int64
-	UpdatedAt int64
-	DeletedAt soft_delete.DeletedAt
+	ID             uint   `gorm:"primarykey"`
+	Tag            string `gorm:"uniqueIndex"`
+	Step           uint32
+	MaxSeq         uint64
+	TagDescription string
+	CreatedAt      int64
+	UpdatedAt      int64
+	DeletedAt      soft_delete.DeletedAt
 }
 
 type segmentStep struct {
@@ -216,8 +216,7 @@ func (r *segmentRepo) fetchSegment(ctx context.Context, ID string) (*domain.Segm
 		if err != nil {
 			return err
 		}
-
-		if err := tx.Where("tag = ?", ID).Take(&m).Error; err != nil {
+		if err := tx.Where("tag = ?", ID).Select("step", "max_seq").Take(&m).Error; err != nil {
 			return err
 		}
 		return nil
@@ -238,8 +237,7 @@ func (r *segmentRepo) fetchSegmentWithStep(ctx context.Context, ID string) (*dom
 		if err != nil {
 			return err
 		}
-
-		if err := tx.Where("tag = ?", ID).Take(&m).Error; err != nil {
+		if err := tx.Where("tag = ?", ID).Select("step", "max_seq").Take(&m).Error; err != nil {
 			return err
 		}
 		return nil

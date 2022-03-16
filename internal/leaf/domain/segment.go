@@ -3,21 +3,9 @@ package domain
 import (
 	"context"
 	"errors"
-	"sync"
 
 	"go.uber.org/atomic"
 )
-
-type SegmentBuffer struct {
-	RWMutex       *sync.RWMutex
-	Seq           *atomic.Int64
-	NextReady     bool
-	InitOk        bool
-	ThreadRunning *atomic.Bool
-	Step          int
-	MinStep       int
-	UpdatedAt     int64
-}
 
 type SegmentRepo interface {
 	FetchNextSegment(ctx context.Context, ID string, maxID uint64) (*Segment, error)
