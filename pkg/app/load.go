@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"time"
 
 	"dubbo.apache.org/dubbo-go/v3/common"
 	"dubbo.apache.org/dubbo-go/v3/common/constant"
@@ -25,8 +24,7 @@ var rc *config2.RootConfig
 
 func initOpts(ops ...Option) {
 	o = &Options{
-		appName:         baseAppName,
-		shutdownTimeout: time.Second * 60,
+		appName: baseAppName,
 	}
 	for _, f := range ops {
 		f(o)
@@ -82,6 +80,7 @@ func getAppName() string {
 
 func initDubboV3RootConfig(configPath string) {
 	rc = config2.NewRootConfigBuilder().Build()
+	config2.SetRootConfig(*rc)
 	conf := config2.NewLoaderConf(config2.WithPath(configPath))
 	koan := config2.GetConfigResolver(conf)
 	if err := koan.UnmarshalWithConf(rc.Prefix(), rc,
@@ -210,5 +209,13 @@ func initConsumer() error {
 	if err := rc.Consumer.Init(rc); err != nil {
 		return err
 	}
+	return nil
+}
+
+func initShutdown() error {
+	if err := rc.Shutdown.Init(); err != nil {
+		return err
+	}
+	rc.Shutdown.InternalSignal = false
 	return nil
 }

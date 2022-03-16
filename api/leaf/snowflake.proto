@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option go_package = "./leaf;pbLeaf";
+package com.github.imkuqin_zw.courier.api.leaf;
+
+message SnowflakeFetchNextReq {
+    string tag = 1;
+}
+
+message SnowflakeFetchNextRes {
+    uint64 seq = 1;
+}
+
+service Snowflake {
+    rpc FetchNext (SnowflakeFetchNextReq) returns (SnowflakeFetchNextRes);
+}

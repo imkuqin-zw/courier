@@ -21,18 +21,19 @@ type SegmentBuffer struct {
 
 type SegmentRepo interface {
 	FetchNextSegment(ctx context.Context, ID string, maxID uint64) (*Segment, error)
-	SaveSegment(ctx context.Context, segment *Segment) error
+	SaveSegment(ctx context.Context, ID string, seq, max uint64, step uint32)
 }
 
 type Segment struct {
 	ID   string
+	step uint32
 	Seq  *atomic.Uint64
 	Max  uint64
 	Repo SegmentRepo
 }
 
-func NewSegment(ID string, seq uint64, max uint64, repo SegmentRepo) *Segment {
-	return &Segment{ID: ID, Seq: atomic.NewUint64(seq), Max: max, Repo: repo}
+func NewSegment(ID string, seq uint64, step uint32, max uint64, repo SegmentRepo) *Segment {
+	return &Segment{ID: ID, Seq: atomic.NewUint64(seq), step: step, Max: max, Repo: repo}
 }
 
 func (s *Segment) FetchNextSeq(ctx context.Context) (uint64, error) {
@@ -49,6 +50,6 @@ func (s *Segment) FetchNextSeq(ctx context.Context) (uint64, error) {
 			return s.FetchNextSeq(ctx)
 		}
 	}
-	_ = s.Repo.SaveSegment(ctx, s)
+	s.Repo.SaveSegment(ctx, s.ID, seq, s.Max, s.step)
 	return seq, nil
 }

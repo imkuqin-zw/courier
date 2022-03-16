@@ -7,13 +7,15 @@ import (
 	"dubbo.apache.org/dubbo-go/v3/common"
 )
 
-const baseAppName = "com.gitee.zawei.courier"
+const (
+	baseAppName     = "com.github.imkuqin_zw.courier"
+	shutdownTimeout = time.Second * 60
+)
 
 type Options struct {
 	appName              string
 	disableAppCfgFile    bool
 	disableAppCfgDynamic bool
-	shutdownTimeout      time.Duration
 	providerFactory      func() []common.RPCService
 	consumerFactory      func() []common.RPCService
 }
@@ -38,12 +40,6 @@ func DisableAppCfgFile() Option {
 func DisableAppCfgDynamic() Option {
 	return func(options *Options) {
 		options.disableAppCfgDynamic = true
-	}
-}
-
-func WithShutdownTimeout(duration time.Duration) Option {
-	return func(options *Options) {
-		options.shutdownTimeout = duration
 	}
 }
 

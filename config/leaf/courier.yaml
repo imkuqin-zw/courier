@@ -1,0 +1,2 @@
+gorm:
+  DSN: "gorm:gorm@tcp(192.168.2.12:9910)/gorm?charset=utf8&parseTime=True&loc=Local"

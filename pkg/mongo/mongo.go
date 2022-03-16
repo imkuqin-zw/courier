@@ -19,7 +19,6 @@ type Config struct {
 func New() *qmgo.Database {
 	cfg := &Config{}
 	if err := config.Get("mongo").Scan(&cfg); err != nil {
-		logger.Errorf("fault to new mongo client, error: %s", err.Error())
 		logger.Fatalf("fault to scan mongo config, error: %s", err.Error())
 	}
 	ops := make([]options2.ClientOptions, 0)

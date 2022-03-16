@@ -1,0 +1,53 @@
+dubbo:
+  config-center:
+    protocol: nacos
+    address: 192.168.2.118:8848
+    data-id: com.github.imkuqin_zw.courier.leaf.dubbo
+  application:
+    name: com.github.imkuqin_zw.courier.leaf
+    group: courier
+    organization: imkuqin-zw.github.com
+    owner: zhangwei
+    version: 1.0.0
+    environment: dev # metadata: environment=pro
+  registries:
+    nacos:
+      protocol: nacos
+      address: 192.168.2.118:8848
+      registry-type: service
+  metadata-report: # 配置元数据中心
+    protocol: nacos
+    address: 192.168.2.118:8848
+  protocols:
+    triple:
+      name: tri
+  provider:
+    services:
+      SegmentUC:
+        interface: com.github.imkuqin_zw.courier.leaf
+
+  logger:
+    zap-config:
+      level: debug # 日志级别
+      development: false
+      disableCaller: false
+      disableStacktrace: false
+      encoding: "console"
+      # zap encoder 配置
+      encoderConfig:
+        messageKey: "message"
+        levelKey: "level"
+        timeKey: "time"
+        nameKey: "logger"
+        callerKey: "caller"
+        stacktraceKey: "stacktrace"
+        lineEnding: ""
+        levelEncoder: "capitalColor"
+        timeEncoder: "iso8601"
+        durationEncoder: "seconds"
+        callerEncoder: "short"
+        nameEncoder: ""
+      outputPaths:
+        - "stderr"
+      errorOutputPaths:
+        - "stderr"

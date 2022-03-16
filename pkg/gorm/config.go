@@ -1,12 +1,9 @@
 package gorm
 
 import (
-	"fmt"
-	"log"
 	"time"
 
 	"github.com/go-sql-driver/mysql"
-	"github.com/imkuqin-zw/courier/pkg/config"
 	"github.com/imkuqin-zw/courier/pkg/gorm/plugin/trace"
 	"gorm.io/gorm"
 )
@@ -20,6 +17,7 @@ const (
 
 // conf options
 type Config struct {
+	Driver string
 	// DSN: user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local
 	DSN string
 
@@ -39,18 +37,6 @@ type Config struct {
 
 	plugins []gorm.Plugin
 	dbCfg   *mysql.Config
-}
-
-func StdConfig(name string) *Config {
-	return RawConfig(fmt.Sprintf("%s.%s", "mysql", name))
-}
-
-func RawConfig(key string) *Config {
-	c := new(Config)
-	if err := config.Get(key).Scan(c); err != nil {
-		log.Fatalf("fault to scan config[%s], error: %s", key, err.Error())
-	}
-	return c
 }
 
 //WithInterceptors

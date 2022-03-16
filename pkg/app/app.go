@@ -37,6 +37,10 @@ func Start(ops ...Option) {
 	if err := initProvider(); err != nil {
 		panic(err)
 	}
+	if err := initShutdown(); err != nil {
+		panic(err)
+	}
+
 	rc.Start()
 }
 
@@ -45,8 +49,11 @@ func WaitSignals() {
 	signal.Notify(sig, shutdownSignals...)
 	s := <-sig
 	logger.Info("got os signal " + s.String())
-
-	time.AfterFunc(o.shutdownTimeout, func() {
+	timeout := rc.Shutdown.GetTimeout()
+	if shutdownTimeout > timeout {
+		timeout = shutdownTimeout
+	}
+	time.AfterFunc(timeout, func() {
 		logger.Warn("application graceful shutdown timeout")
 		os.Exit(128 + int(s.(syscall.Signal))) // second signal. Exit directly.
 	})

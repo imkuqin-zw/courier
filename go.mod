@@ -7,10 +7,13 @@ require (
 	github.com/apache/dubbo-go-hessian2 v1.11.0
 	github.com/bitly/go-simplejson v0.5.0
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
+	github.com/dubbogo/grpc-go v1.42.8
+	github.com/dubbogo/triple v1.1.8-rc2
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/go-sql-driver/mysql v1.6.0
+	github.com/google/wire v0.5.0
 	github.com/imdario/mergo v0.3.12
 	github.com/knadh/koanf v1.4.0
 	github.com/mitchellh/mapstructure v1.4.3
@@ -20,6 +23,7 @@ require (
 	github.com/stretchr/testify v1.7.0
 	go.mongodb.org/mongo-driver v1.8.4
 	go.uber.org/atomic v1.9.0
+	google.golang.org/protobuf v1.27.1
 	gorm.io/driver/mysql v1.3.2
 	gorm.io/gorm v1.23.2
 	gorm.io/plugin/soft_delete v1.1.0

@@ -5,7 +5,8 @@ import (
 	"time"
 
 	"dubbo.apache.org/dubbo-go/v3/common/logger"
-	"gorm.io/driver/mysql"
+	"github.com/imkuqin-zw/courier/pkg/config"
+	"github.com/imkuqin-zw/courier/pkg/gorm/driver"
 	"gorm.io/gorm"
 )
 
@@ -18,7 +19,13 @@ func open(config *Config) *gorm.DB {
 		DryRun:      config.DryRun,
 		PrepareStmt: config.PrepareStmt,
 	}
-	db, err := gorm.Open(mysql.Open(config.DSN), cfg)
+
+	ctor, ok := driver.GetDriverCtor(config.Driver)
+	if !ok {
+		logger.Fatalf("unknown driver[%s]", config.Driver)
+		return nil
+	}
+	db, err := gorm.Open(ctor(config.DSN), cfg)
 	if err != nil {
 		logger.Fatalf("fault to open mysql, err: %s", err.Error())
 		return nil
@@ -46,4 +53,12 @@ func open(config *Config) *gorm.DB {
 		return nil
 	}
 	return db
+}
+
+func New() *gorm.DB {
+	cfg := &Config{}
+	if err := config.Get("gorm").Scan(&cfg); err != nil {
+		logger.Fatalf("fault to scan mongo config, error: %s", err.Error())
+	}
+	return cfg.Build()
 }
