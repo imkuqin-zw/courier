@@ -2,23 +2,20 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: leaf
-  name: leaf
+    app: $Service$
+  name: $Service$
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: leaf
+      app: $Service$
       version: rc-origin
   template:
     metadata:
       labels:
-        app: leaf
+        app: $T-Service$
         version: rc-origin
     spec:
       containers:
-        - image: dockersamples/examplevotingapp_vote:before
-          name: vote-e2e
-          ports:
-            - containerPort: 80
-              name: vote
+        - image: ccr.ccs.tencentyun.com/$Product$/$Service$:latest
+          name: $T-Service$
