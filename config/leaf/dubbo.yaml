@@ -1,7 +1,7 @@
 dubbo:
   config-center:
     protocol: nacos
-    address: 192.168.2.118:8848
+    address: nacos-headless.default.svc.cluster.local:8848
     data-id: com.github.imkuqin_zw.courier.leaf.dubbo
   application:
     name: com.github.imkuqin_zw.courier.leaf
@@ -9,15 +9,16 @@ dubbo:
     organization: imkuqin-zw.github.com
     owner: zhangwei
     version: 1.0.0
-    environment: dev # metadata: environment=pro
+    environment: dev
+    metadataType: local
   registries:
     nacos:
       protocol: nacos
-      address: 192.168.2.118:8848
+      address: nacos-headless.default.svc.cluster.local:8848
       registry-type: service
   metadata-report: # 配置元数据中心
     protocol: nacos
-    address: 192.168.2.118:8848
+    address: nacos-headless.default.svc.cluster.local:8848
   protocols:
     triple:
       name: tri
@@ -41,13 +42,12 @@ dubbo:
         nameKey: "logger"
         callerKey: "caller"
         stacktraceKey: "stacktrace"
-        lineEnding: ""
         levelEncoder: "capitalColor"
         timeEncoder: "iso8601"
         durationEncoder: "seconds"
         callerEncoder: "short"
         nameEncoder: ""
       outputPaths:
-        - "stderr"
+        - "stdout"
       errorOutputPaths:
         - "stderr"

@@ -81,6 +81,7 @@ func (j *jsonValues) Scan(v interface{}) error {
 	config := mapstructure.DecoderConfig{
 		DecodeHook: mapstructure.StringToTimeDurationHookFunc(),
 		Result:     v,
+		TagName:    "yaml",
 	}
 	decoder, err := mapstructure.NewDecoder(&config)
 	if err != nil {
@@ -231,6 +232,7 @@ func (j *jsonValue) Scan(v interface{}) error {
 	config := mapstructure.DecoderConfig{
 		DecodeHook: mapstructure.StringToTimeDurationHookFunc(),
 		Result:     v,
+		TagName:    "yaml",
 	}
 	decoder, err := mapstructure.NewDecoder(&config)
 	if err != nil {

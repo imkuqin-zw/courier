@@ -30,7 +30,6 @@ import (
 	"github.com/imkuqin-zw/courier/pkg/config/source/file"
 	flagSource "github.com/imkuqin-zw/courier/pkg/config/source/flag"
 	dubbo "github.com/imkuqin-zw/courier/pkg/config/source/remote/dubbov3"
-	"github.com/knadh/koanf"
 )
 
 var o *Options
@@ -77,8 +76,7 @@ func loadAppCfgFile() {
 
 func loadDubboV3() {
 	registerPOJO()
-	dubboFile := filepath.Join(config.Get("config.dir").String("./conf"), "dubbo.yaml")
-	initDubboV3RootConfig(dubboFile)
+	initDubboV3RootConfig()
 	initDubboV3ConfigCenter()
 	if err := initDubboV3(); err != nil {
 		panic("fault to init dubbo v3")
@@ -92,15 +90,24 @@ func getAppName() string {
 	return o.appName
 }
 
-func initDubboV3RootConfig(configPath string) {
+func initDubboV3RootConfig() {
+	dubboFile := filepath.Join(config.Get("config.dir").String("./conf"), "dubbo.yaml")
+	_, err := os.Stat(dubboFile)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return
+		}
+		panic(fmt.Sprintf("fault to read courier file config: %s", err.Error()))
+	}
+	fileSource := file.NewSource(file.WithPath(dubboFile), file.WithWatch(false))
+	if err := config.Load(fileSource); err != nil {
+		panic(fmt.Sprintf("fault to load courier file source: %s", err.Error()))
+	}
 	rc = config2.NewRootConfigBuilder().Build()
-	config2.SetRootConfig(*rc)
-	conf := config2.NewLoaderConf(config2.WithPath(configPath))
-	koan := config2.GetConfigResolver(conf)
-	if err := koan.UnmarshalWithConf(rc.Prefix(), rc,
-		koanf.UnmarshalConf{Tag: "yaml"}); err != nil {
+	if err := config.Get("dubbo").Scan(rc); err != nil {
 		panic(fmt.Sprintf("fault to init dubbo v3 root config: %s", err.Error()))
 	}
+	config2.SetRootConfig(*rc)
 }
 
 func initDubboV3ConfigCenter() {

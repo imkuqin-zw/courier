@@ -18,6 +18,7 @@ import (
 	"github.com/imkuqin-zw/courier/internal/leaf"
 	"github.com/imkuqin-zw/courier/pkg/app"
 	"github.com/imkuqin-zw/courier/pkg/config"
+	_ "github.com/imkuqin-zw/courier/pkg/gorm/driver/mysql"
 	_ "github.com/imkuqin-zw/courier/pkg/imports"
 )
 

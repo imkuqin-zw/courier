@@ -18,7 +18,7 @@ import "gorm.io/gorm"
 
 type Constructor func(dsn string) gorm.Dialector
 
-var driver map[string]Constructor
+var driver = map[string]Constructor{}
 
 func InstallerCtor(name string, ctor Constructor) {
 	driver[name] = ctor
