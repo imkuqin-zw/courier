@@ -30,6 +30,7 @@ type Options struct {
 	appName              string
 	disableAppCfgFile    bool
 	disableAppCfgDynamic bool
+	EnvKeyReplaceRule    map[string]map[string]string
 	providerFactory      func() []common.RPCService
 	consumerFactory      func() []common.RPCService
 }
@@ -42,6 +43,15 @@ func WithAppName(appName string) Option {
 			return
 		}
 		options.appName = fmt.Sprintf("%s.%s", baseAppName, appName)
+	}
+}
+
+func WithEnvKeyReplaceRule(rule map[string]map[string]string) Option {
+	return func(options *Options) {
+		if rule == nil {
+			return
+		}
+		o.EnvKeyReplaceRule = rule
 	}
 }
 

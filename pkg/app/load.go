@@ -37,7 +37,8 @@ var rc *config2.RootConfig
 
 func initOpts(ops ...Option) {
 	o = &Options{
-		appName: baseAppName,
+		appName:           baseAppName,
+		EnvKeyReplaceRule: map[string]map[string]string{},
 	}
 	for _, f := range ops {
 		f(o)
@@ -47,8 +48,13 @@ func initOpts(ops ...Option) {
 func loadEnvAndFlag() {
 	fs := flag.NewFlagSet("config", flag.ExitOnError)
 	fs.String("config_dir", "./conf", "default config root dir path")
+	o.EnvKeyReplaceRule["dubbo"] = map[string]string{"_": "-"}
 	sources := []source.Source{
-		env.NewSource(env.WithPrefix("COURIER"), env.WithStrippedPrefix("COURIER")),
+		env.NewSource(
+			env.WithPrefix("COURIER"),
+			env.WithStrippedPrefix("COURIER"),
+			env.WithKeyReplaceRule(o.EnvKeyReplaceRule),
+		),
 		flagSource.NewSource(flagSource.WithFlagSet(fs), flagSource.IncludeUnset(true)),
 	}
 	if err := config.Load(sources...); err != nil {
@@ -94,15 +100,16 @@ func initDubboV3RootConfig() {
 	dubboFile := filepath.Join(config.Get("config.dir").String("./conf"), "dubbo.yaml")
 	_, err := os.Stat(dubboFile)
 	if err != nil {
-		if os.IsNotExist(err) {
-			return
+		if !os.IsNotExist(err) {
+			panic(fmt.Sprintf("fault to read courier file config: %s", err.Error()))
 		}
-		panic(fmt.Sprintf("fault to read courier file config: %s", err.Error()))
+	} else {
+		fileSource := file.NewSource(file.WithPath(dubboFile), file.WithWatch(false))
+		if err := config.Load(fileSource); err != nil {
+			panic(fmt.Sprintf("fault to load courier file source: %s", err.Error()))
+		}
 	}
-	fileSource := file.NewSource(file.WithPath(dubboFile), file.WithWatch(false))
-	if err := config.Load(fileSource); err != nil {
-		panic(fmt.Sprintf("fault to load courier file source: %s", err.Error()))
-	}
+	fmt.Println(string(config.Bytes()))
 	rc = config2.NewRootConfigBuilder().Build()
 	if err := config.Get("dubbo").Scan(rc); err != nil {
 		panic(fmt.Sprintf("fault to init dubbo v3 root config: %s", err.Error()))

@@ -10,13 +10,11 @@ import (
 	"github.com/imkuqin-zw/courier/pkg/config/source"
 )
 
-var (
-	DefaultPrefixes = []string{}
-)
-
 type env struct {
 	prefixes         []string
 	strippedPrefixes []string
+	separator        string
+	replaceRule      map[string]map[string]string
 	opts             source.Options
 }
 
@@ -32,16 +30,18 @@ func (e *env) Read() (*source.ChangeSet, error) {
 			if _, ok := matchPrefix(e.prefixes, key); ok {
 				notFound = false
 			}
-
 			if match, ok := matchPrefix(e.strippedPrefixes, key); ok {
-				key = strings.TrimPrefix(key, match)
-				notFound = false
+				if key = strings.TrimPrefix(key, match); key != "" {
+					notFound = false
+				}
 			}
 			if notFound {
 				continue
 			}
+
 		}
-		keys := strings.Split(key, "_")
+		keys := strings.Split(key, e.separator)
+		e.replaceKey(key, keys)
 		reverse(keys)
 		tmp := make(map[string]interface{})
 		for i, k := range keys {
@@ -79,6 +79,20 @@ func (e *env) Read() (*source.ChangeSet, error) {
 	cs.Checksum = cs.Sum()
 
 	return cs, nil
+}
+
+func (e *env) replaceKey(key string, keys []string) {
+	i := strings.Index(key, e.separator)
+	if i < 0 {
+		return
+	}
+	if replace, ok := e.replaceRule[key[:i]]; ok {
+		for oldStr, newStr := range replace {
+			for _, item := range keys {
+				item = strings.ReplaceAll(item, oldStr, newStr)
+			}
+		}
+	}
 }
 
 func matchPrefix(pre []string, s string) (string, bool) {
@@ -124,16 +138,23 @@ func NewSource(opts ...source.Option) source.Source {
 
 	var sp []string
 	var pre []string
+	var rr map[string]map[string]string
+	var separator = "__"
+	if p, ok := options.Context.Value(separatorKey{}).(string); ok {
+		separator = p
+	}
 	if p, ok := options.Context.Value(strippedPrefixKey{}).([]string); ok {
-		sp = p
+		sp = appendUnderscore(p, separator)
 	}
 
 	if p, ok := options.Context.Value(prefixKey{}).([]string); ok {
-		pre = p
+		pre = appendUnderscore(p, separator)
 	}
 
-	if len(sp) > 0 || len(pre) > 0 {
-		pre = append(pre, DefaultPrefixes...)
+	if p, ok := options.Context.Value(keyReplaceRule{}).(map[string]map[string]string); ok {
+		rr = p
+	} else {
+		rr = make(map[string]map[string]string)
 	}
-	return &env{prefixes: pre, strippedPrefixes: sp, opts: options}
+	return &env{prefixes: pre, strippedPrefixes: sp, replaceRule: rr, separator: separator, opts: options}
 }
