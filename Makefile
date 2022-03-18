@@ -31,7 +31,7 @@ allpush.arm64: $(ALL_PUSH:=.arm64) $(ALL_REAPER_PUSH:=.arm64)
 	@sed -i -e '/#alpine-git.Dockerfile/ {' -e 'r build/base/amd64/alpine-git.Dockerfile' -e 'd' -e '}' dist/amd64/$*.Dockerfile
 	@sed -i -e '/#alpine.Dockerfile/ {' -e 'r build/base/amd64/alpine.Dockerfile' -e 'd' -e '}' dist/amd64/$*.Dockerfile
 	@sed -i -e '/#ubuntu-xenial.Dockerfile/ {' -e 'r build/base/amd64/ubuntu-xenial.Dockerfile' -e 'd' -e '}' dist/amd64/$*.Dockerfile
-	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o dist/$*/ cmd/$*/main.go
+	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOPROXY=https://goproxy.cn,direct go build -v -o dist/$*/ cmd/$*/main.go
 	@docker build -f dist/amd64/$*.Dockerfile --tag ${MAKE_IMAGE} .
 
 %.push.arm64: MAKE_IMAGE ?= ${IMAGE_REPOSITORY}/$*:${VERSION}-amd64
@@ -46,7 +46,7 @@ allpush.arm64: $(ALL_PUSH:=.arm64) $(ALL_REAPER_PUSH:=.arm64)
 	@sed -i -e '/#alpine-git.Dockerfile/ {' -e 'r build/base/arm64/alpine-git.Dockerfile' -e 'd' -e '}' dist/arm64/$*.Dockerfile
 	@sed -i -e '/#alpine.Dockerfile/ {' -e 'r build/base/arm64/alpine.Dockerfile' -e 'd' -e '}' dist/arm64/$*.Dockerfile
 	@sed -i -e '/#ubuntu-xenial.Dockerfile/ {' -e 'r build/base/arm64/ubuntu-xenial.Dockerfile' -e 'd' -e '}' dist/arm64/$*.Dockerfile
-	@CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -v -o dist/$*/ cmd/$*/main.go
+	@CGO_ENABLED=0 GOOS=linux GOARCH=arm64 GOPROXY=https://goproxy.cn,direct go build -v -o dist/$*/ cmd/$*/main.go
 	@docker build -f dist/arm64/$*.Dockerfile --tag ${MAKE_IMAGE} .
 
 .PHONY: clean
