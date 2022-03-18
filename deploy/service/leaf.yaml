@@ -9,13 +9,16 @@ spec:
   selector:
     matchLabels:
       app: $Service$
-      version: rc-origin
   template:
     metadata:
       labels:
         app: $T-Service$
-        version: rc-origin
     spec:
       containers:
         - image: ccr.ccs.tencentyun.com/$Product$/$Service$:latest
           name: $T-Service$
+          env:
+            - name: "COURIER_DUBBO_CONFIG-CENTER_ADDRESS"
+              value: {{.ConfigCenterAddr}}
+            - name: "COURIER_DUBBO_CONFIG-CENTER_PROTOCOL"
+              value: {{.ConfigCenterProtocol}}

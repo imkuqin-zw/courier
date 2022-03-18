@@ -32,7 +32,7 @@ dubbo:
       development: false
       disableCaller: false
       disableStacktrace: false
-      encoding: "console"
+      encoding: "json"
       # zap encoder 配置
       encoderConfig:
         messageKey: "message"
